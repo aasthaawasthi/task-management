@@ -13,12 +13,12 @@ exports.generateToken = (user) => {
 exports.verifyToken = (token) => {
   try {
     return jwt.verify(token, process.env.JWT_SECRET);
-  } catch (err) {
+  } 
+  catch (err) {
     throw err;
   }
 };
 
-// Optional: Function to extract token from headers
 exports.extractTokenFromHeaders = (req) => {
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith("Bearer ")) {

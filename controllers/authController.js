@@ -8,11 +8,13 @@ exports.register = async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const existingUser = await User.findOne({ email });
-    console.log("Existing user: ", existingUser);
+
     if (existingUser) return res.status(400).json({ message: "User already exists!", existingUser });
+
     const user = await User.create({ name, email, password: hashedPassword, role });
     return res.status(201).json({ message: "User registered successfully", user });
-  } catch (error) {
+  }
+  catch (error) {
     return res.status(500).json({ message: "Error registering user", error });
   }
 };
@@ -22,16 +24,16 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
+    if (!user || !(await bcrypt.compare(password, user.password))) return res.status(401).json({ message: "Invalid credentials" });
+
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
     return res.json({ message: "Logged In Successfully!", token });
-  } catch (error) {
+  }
+  catch (error) {
     return res.status(500).json({ message: "Error logging in", error });
   }
 };
@@ -41,7 +43,8 @@ exports.getUsers = async (req, res) => {
     const users = await User.find({});
     if (!users) return res.status(400).json({ message: "No user found!" });
     return res.status(200).json({ users });
-  } catch (error) {
+  } 
+  catch (error) {
     return res.status(500).json({ message: "Error getting users", error });
   }
 };

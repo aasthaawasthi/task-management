@@ -11,7 +11,8 @@ exports.createTask = async (req, res) => {
       userId: req.user.userId,
     });
     return res.status(201).json({ message: "Task created", task });
-  } catch (error) {
+  }
+  catch (error) {
     return res.status(500).json({ message: "Error creating task", error });
   }
 };
@@ -19,16 +20,17 @@ exports.createTask = async (req, res) => {
 // Update Task
 exports.updateTask = async (req, res) => {
   try {
-    const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
+    const existingTask = await Task.find({ _id: req.params.id });
+    if (existingTask.length === 0) return res.status(400).json({ message: "No task found!" });
+    const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
     await Activity.create({
       action: "updated",
       taskId: task._id,
       userId: req.user.userId,
     });
     return res.json({ message: "Task updated", task });
-  } catch (error) {
+  }
+  catch (error) {
     return res.status(500).json({ message: "Error updating task", error });
   }
 };
@@ -37,15 +39,19 @@ exports.updateTask = async (req, res) => {
 exports.deleteTask = async (req, res) => {
   try {
     const existingTask = await Task.find({ _id: req.params.id });
+
     if (existingTask.length === 0) return res.status(400).json({ message: "No task exist with this id!" });
+
     await Task.findByIdAndDelete(req.params.id);
     await Activity.create({
       action: "deleted",
       taskId: req.params.id,
       userId: req.user.userId,
     });
+
     return res.json({ message: "Task deleted successfully!" });
-  } catch (error) {
+  }
+  catch (error) {
     return res.status(500).json({ message: "Error deleting task", error });
   }
 };
@@ -55,7 +61,8 @@ exports.getTasks = async (req, res) => {
     const tasks = await Task.find({});
     if (!tasks) return res.status(400).json({ message: "No task found!" });
     return res.status(200).json({ tasks });
-  } catch (error) {
+  }
+  catch (error) {
     return res.status(500).json({ message: "Error getting all tasks", error });
   }
 };
