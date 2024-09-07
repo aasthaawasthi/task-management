@@ -1,12 +1,11 @@
-const jwt = require('jsonwebtoken');
-const { generateToken } = require('../utils/jwtUtils');
+const { verifyToken, extractTokenFromHeaders } = require('../utils/jwtUtils');
 
 exports.protect = (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
+  const token = extractTokenFromHeaders(req);
   if (!token) return res.status(401).json({ message: 'Unauthorized' });
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = verifyToken(token);
     req.user = decoded;
     next();
   } catch (error) {
@@ -14,16 +13,3 @@ exports.protect = (req, res, next) => {
   }
 };
 
-exports.login = async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    const user = await User.findOne({ email });
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-    const token = generateToken(user); // Generate JWT
-    res.json({ token });
-  } catch (error) {
-    res.status(500).json({ message: 'Error logging in', error });
-  }
-};

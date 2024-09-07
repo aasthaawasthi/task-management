@@ -1,16 +1,14 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 exports.generateToken = (user) => {
-  // Create a payload with the user's ID and role
   const payload = {
     userId: user._id,
     role: user.role,
   };
 
   // Sign the payload with the secret and set an expiration time (e.g., 1 hour)
-  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
 };
-
 
 exports.verifyToken = (token) => {
   try {
@@ -23,8 +21,8 @@ exports.verifyToken = (token) => {
 // Optional: Function to extract token from headers
 exports.extractTokenFromHeaders = (req) => {
   const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    return authHeader.split(' ')[1]; // Return the token part after 'Bearer'
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    return authHeader.split(" ")[1]; // Return the token part after 'Bearer'
   }
   return null;
 };

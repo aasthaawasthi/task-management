@@ -7,6 +7,7 @@ const activitySchema = new mongoose.Schema(
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     timestamp: { type: Date, default: Date.now },
   },
+  { timestamps: true },
   { versionKey: false }
 );
 
